@@ -1,0 +1,4 @@
+name: tumeke-task
+
+include:
+  - tumeke-task-backend/docker-compose.yml
