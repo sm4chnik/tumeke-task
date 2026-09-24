@@ -1,0 +1,8 @@
+node_modules
+build
+ios
+android
+vendor
+.bundle
+Dockerfile
+docker-compose.yml

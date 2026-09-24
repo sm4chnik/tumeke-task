@@ -2,3 +2,4 @@ name: tumeke-task
 
 include:
   - tumeke-task-backend/docker-compose.yml
+  - tumeke-task/docker-compose.yml
