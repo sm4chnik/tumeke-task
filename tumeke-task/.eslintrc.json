@@ -1,0 +1,61 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "prettier"
+  ],
+  "globals": {
+    "window": "readonly",
+    "document": "readonly"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js"],
+      "rules": {
+        "prettier/prettier": "error",
+        "no-plusplus": [2, { "allowForLoopAfterthoughts": true }],
+        "no-continue": "off",
+        "class-methods-use-this": "off",
+        "jsx-a11y/control-has-associated-label": "off",
+        "@typescript-eslint/no-shadow": "error",
+        "@typescript-eslint/no-throw-literal": "off",
+        "@typescript-eslint/lines-between-class-members": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "import/prefer-default-export": "off",
+        "react/static-property-placement": ["error", "static public field"],
+        "react/state-in-constructor": "off",
+        "react/function-component-definition": "off",
+        "react/require-default-props": "off",
+        "react/jsx-filename-extension": [
+          2,
+          { "extensions": [".ts", ".tsx"] }
+        ],
+        "react/jsx-props-no-spreading": "off",
+        "jsx-a11y/media-has-caption": "off"
+      }
+    }
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    }
+  }
+}
