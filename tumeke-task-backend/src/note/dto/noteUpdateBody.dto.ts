@@ -1,12 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsObject, IsString, ValidateNested } from 'class-validator';
+import {
+  NoteContentBaseDto,
+  NoteContentDto,
+  noteContentTypeOptions,
+} from './noteContent.dto';
 
 export class NoteUpdateBodyDto {
   @IsString()
   @Type(() => String)
   name: string;
 
-  @IsNumber()
-  @Type(() => Object)
-  note: any;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => NoteContentBaseDto, noteContentTypeOptions)
+  note: NoteContentDto;
 }

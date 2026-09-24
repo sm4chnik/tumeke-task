@@ -6,3 +6,63 @@ datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
+
+model clients {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar
+  createdAt       DateTime?         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime?         @default(now()) @db.Timestamptz(6)
+  deletedAt       DateTime?         @db.Timestamptz(6)
+  clientsHasNotes clientsHasNotes[]
+  users           users[]
+}
+
+model clientsHasNotes {
+  id       Int     @id @default(autoincrement())
+  clientId Int
+  noteId   Int
+  notes    notes   @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  clients  clients @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "clientsHasNotes_userId_fkey")
+
+  @@index([noteId], map: "fki_clientsHasNotes_noteId_fkey")
+  @@index([clientId], map: "fki_clientsHasNotes_userId_fkey")
+  @@index([clientId], map: "fki_clients_clientId_fkey")
+  @@index([noteId], map: "fki_clients_noteId_fkey")
+}
+
+model notes {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar
+  note            Json
+  createdAt       DateTime?         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime?         @default(now()) @db.Timestamptz(6)
+  deletedAt       DateTime?         @db.Timestamptz(6)
+  clientsHasNotes clientsHasNotes[]
+  usersHasNotes   usersHasNotes[]
+}
+
+model users {
+  id            Int             @id @default(autoincrement())
+  name          String?         @db.VarChar
+  clientId      Int
+  createdAt     DateTime?       @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime?       @default(now()) @db.Timestamptz(6)
+  deletedAt     DateTime?       @db.Timestamptz(6)
+  clients       clients         @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usersHasNotes usersHasNotes[]
+
+  @@index([clientId], map: "fki_users_clientId_fkey")
+}
+
+model usersHasNotes {
+  id     Int   @id @default(autoincrement())
+  userId Int
+  noteId Int
+  notes  notes @relation(fields: [noteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users  users @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([noteId], map: "fki_usersHasNotes_noteId_fkey")
+  @@index([userId], map: "fki_usersHasNotes_userId_fkey")
+  @@index([noteId], map: "fki_users_noteId_fkey")
+  @@index([userId], map: "fki_users_userId_fkey")
+}

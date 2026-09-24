@@ -1,5 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import {
+  NoteContentBaseDto,
+  NoteContentDto,
+  noteContentTypeOptions,
+} from './noteContent.dto';
 
 export class NoteCreateBodyDto {
   @IsOptional()
@@ -16,7 +27,8 @@ export class NoteCreateBodyDto {
   @Type(() => String)
   name: string;
 
-  @IsNumber()
-  @Type(() => Object)
-  note: any;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => NoteContentBaseDto, noteContentTypeOptions)
+  note: NoteContentDto;
 }
