@@ -36,5 +36,13 @@ target 'TumekeTask' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Some pods (e.g. the RNSVG filters resource bundle) declare iOS 12.4,
+    # which newer Xcode versions reject as a deployment target
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+      end
+    end
   end
 end

@@ -1242,6 +1242,49 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-video (6.19.3):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - react-native-video/Video (= 6.19.3)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-video/Video (6.19.3):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - React-nativeconfig (0.76.1)
   - React-NativeModulesApple (0.76.1):
     - glog
@@ -1511,6 +1554,8 @@ PODS:
     - React-utils (= 0.76.1)
   - RNFS (2.20.0):
     - React-Core
+  - RNSVG (15.12.1):
+    - React-Core
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -1552,6 +1597,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1580,6 +1626,7 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1658,6 +1705,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1714,6 +1763,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1753,6 +1804,7 @@ SPEC CHECKSUMS:
   React-logger: 7b5b458327a1ff0d7e5a349430d1ed133dcebaa3
   React-Mapbuffer: 0d88ad9afa9e195dd7634424bde1d38e4129e646
   React-microtasksnativemodule: 7198aff94d07184642b452007fe7166399fb47d6
+  react-native-video: 33d3db63c81e4f398e3b4de44cbd724a66df42b6
   React-nativeconfig: 93fe8c85a8c40820c57814e30f3e44b94c995a7b
   React-NativeModulesApple: a4457b73e63e983db66d66612160006bccb00ad5
   React-perflogger: 3140b7778984a486db80d4d2aeaa266cae4eb8c7
@@ -1781,9 +1833,10 @@ SPEC CHECKSUMS:
   ReactCodegen: 3b0ff1c9015e3ebcf2bd2f8559995c74bfacf8a1
   ReactCommon: c21a3d6a8d3e98b6e99730139a52f59f0beea89d
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
+  RNSVG: 60e4a39ef5382e660cab2dfc90760231ecab7543
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 157bed1c62656587df4639d4dc29714898f8fb10
+  Yoga: db69236006b8b1c6d55ab453390c882306cbf219
 
-PODFILE CHECKSUM: 8f41e44104a8825748a9133fc5439626735468d3
+PODFILE CHECKSUM: b6dd4112e414da5d38ed491414c7ea5424c4dd02
 
 COCOAPODS: 1.15.2

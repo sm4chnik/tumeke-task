@@ -2,6 +2,30 @@
 
 #import <React/RCTBundleURLProvider.h>
 
+// iOS 27 terminates apps that don't adopt the UIScene lifecycle.
+// RCTAppDelegate still creates its window in didFinishLaunching,
+// so the scene delegate only attaches that window to the connected scene.
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
+@property (nonatomic, strong) UIWindow *window;
+@end
+
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene
+    willConnectToSession:(UISceneSession *)session
+                 options:(UISceneConnectionOptions *)connectionOptions
+{
+  if (![scene isKindOfClass:[UIWindowScene class]]) {
+    return;
+  }
+  AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+  self.window = appDelegate.window;
+  self.window.windowScene = (UIWindowScene *)scene;
+  [self.window makeKeyAndVisible];
+}
+
+@end
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
