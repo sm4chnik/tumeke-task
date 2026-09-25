@@ -1,35 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import {
-  Prisma,
-  clients as Client,
-  clientsHasNotes as ClientsHasNotes,
-  notes as Note,
-} from 'prisma/prisma-client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { rethrowNotFound } from '../prisma/prisma.errors';
-import { BillStatus } from '../note/dto/bill.dto';
+import { toPagination } from '../common/pagination';
+import {
+  FINANCE_NOTE_TYPE,
+  UNPAID_STATUS,
+  clientInclude,
+} from './client.constants';
+import { ClientRow, ClientWithNotes } from './client.types';
 import { ClientFindAllQueryDto } from './dto/clientFindAllQuery.dto';
 import { ClientUpdateBodyDto } from './dto/clientUpdateBody.dto';
-
-const clientInclude = {
-  clientsHasNotes: {
-    where: { notes: { deletedAt: null } },
-    include: { notes: true },
-  },
-} satisfies Prisma.clientsInclude;
-
-const UNPAID_STATUS: BillStatus = 'unpaid';
-
-// Timestamps nested in json_agg come back as ISO strings, not Date
-type NoteRow = Omit<Note, 'createdAt' | 'updatedAt' | 'deletedAt'> & {
-  createdAt: string | null;
-  updatedAt: string | null;
-  deletedAt: string | null;
-};
-
-type ClientRow = Client & {
-  clientsHasNotes: (ClientsHasNotes & { notes: NoteRow })[];
-};
 
 function toDate(value: string | null): Date | null {
   return value === null ? null : new Date(value);
@@ -42,7 +23,7 @@ function financeNoteExists(billCondition: Prisma.Sql): Prisma.Sql {
     JOIN notes n ON n.id = chn."noteId"
     WHERE chn."clientId" = c.id
       AND n."deletedAt" IS NULL
-      AND n.note ->> 'type' = 'finance'
+      AND n.note ->> 'type' = ${FINANCE_NOTE_TYPE}
       AND ${billCondition}
   )`;
 }
@@ -51,11 +32,7 @@ function financeNoteExists(billCondition: Prisma.Sql): Prisma.Sql {
 export class ClientService {
   @Inject() private readonly prisma: PrismaService;
 
-  async findAll(
-    query: ClientFindAllQueryDto,
-  ): Promise<
-    (Client & { clientsHasNotes?: (ClientsHasNotes & { notes: Note })[] })[]
-  > {
+  async findAll(query: ClientFindAllQueryDto): Promise<ClientWithNotes[]> {
     const conditions: Prisma.Sql[] = [Prisma.sql`c."deletedAt" IS NULL`];
     if (query.hasUnpaid) {
       conditions.push(
@@ -79,6 +56,7 @@ export class ClientService {
         ),
       );
     }
+    const { take, skip } = toPagination(query);
 
     const rows = await this.prisma.$queryRaw<ClientRow[]>`
       SELECT
@@ -107,6 +85,8 @@ export class ClientService {
       FROM clients c
       WHERE ${Prisma.join(conditions, ' AND ')}
       ORDER BY c.id
+      LIMIT ${take}
+      OFFSET ${skip}
     `;
 
     return rows.map((row) => ({
@@ -123,11 +103,7 @@ export class ClientService {
     }));
   }
 
-  async find(
-    id: number,
-  ): Promise<
-    Client & { clientsHasNotes?: (ClientsHasNotes & { notes: Note })[] }
-  > {
+  async find(id: number): Promise<ClientWithNotes> {
     const client = await this.prisma.clients.findFirst({
       where: { id, deletedAt: null },
       include: clientInclude,
@@ -138,11 +114,7 @@ export class ClientService {
     return client;
   }
 
-  async create(
-    data: ClientUpdateBodyDto,
-  ): Promise<
-    Client & { clientsHasNotes?: (ClientsHasNotes & { notes: Note })[] }
-  > {
+  async create(data: ClientUpdateBodyDto): Promise<ClientWithNotes> {
     return this.prisma.clients.create({
       data: { name: data.name },
       include: clientInclude,
@@ -152,9 +124,7 @@ export class ClientService {
   async update(
     id: number,
     data: ClientUpdateBodyDto,
-  ): Promise<
-    Client & { clientsHasNotes?: (ClientsHasNotes & { notes: Note })[] }
-  > {
+  ): Promise<ClientWithNotes> {
     return this.prisma.clients
       .update({
         where: { id, deletedAt: null },

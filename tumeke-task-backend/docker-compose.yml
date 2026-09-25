@@ -11,8 +11,10 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./docker/initdb/00-roles.sql:/docker-entrypoint-initdb.d/00-roles.sql:ro
       - ./tumeke-task.sql:/docker-entrypoint-initdb.d/01-tumeke-task.sql:ro
+      - ./docker/initdb/02-drop-duplicate-indexes.sql:/docker-entrypoint-initdb.d/02-drop-duplicate-indexes.sql:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U admin -d tumeke-task']
+      # TCP check: during init scripts the temporary server listens only on the unix socket
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U admin -d tumeke-task']
       interval: 2s
       timeout: 5s
       retries: 20

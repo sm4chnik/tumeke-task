@@ -26,8 +26,6 @@ model clientsHasNotes {
 
   @@index([noteId], map: "fki_clientsHasNotes_noteId_fkey")
   @@index([clientId], map: "fki_clientsHasNotes_userId_fkey")
-  @@index([clientId], map: "fki_clients_clientId_fkey")
-  @@index([noteId], map: "fki_clients_noteId_fkey")
 }
 
 model notes {
@@ -63,6 +61,4 @@ model usersHasNotes {
 
   @@index([noteId], map: "fki_usersHasNotes_noteId_fkey")
   @@index([userId], map: "fki_usersHasNotes_userId_fkey")
-  @@index([noteId], map: "fki_users_noteId_fkey")
-  @@index([userId], map: "fki_users_userId_fkey")
 }

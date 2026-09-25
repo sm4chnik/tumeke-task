@@ -4,43 +4,28 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  Prisma,
-  users as User,
-  notes as Note,
-  usersHasNotes as UsersHasNotes,
-} from 'prisma/prisma-client';
 import { PrismaService } from '../prisma/prisma.service';
 import { rethrowNotFound } from '../prisma/prisma.errors';
+import { toPagination } from '../common/pagination';
+import { userInclude } from './user.constants';
+import { UserWithNotes } from './user.types';
 import { UserFindAllQueryDto } from './dto/userFindAllQuery.dto';
 import { UserUpdateBodyDto } from './dto/userUpdateBody.dto';
-
-const userInclude = {
-  usersHasNotes: {
-    where: { notes: { deletedAt: null } },
-    include: { notes: true },
-  },
-} satisfies Prisma.usersInclude;
 
 @Injectable()
 export class UserService {
   @Inject() private readonly prisma: PrismaService;
 
-  async findAll(
-    query: UserFindAllQueryDto,
-  ): Promise<
-    (User & { usersHasNotes?: (UsersHasNotes & { notes: Note })[] })[]
-  > {
+  async findAll(query: UserFindAllQueryDto): Promise<UserWithNotes[]> {
     return this.prisma.users.findMany({
       where: { deletedAt: null, clientId: query.clientId },
       include: userInclude,
       orderBy: { id: 'asc' },
+      ...toPagination(query),
     });
   }
 
-  async find(
-    id: number,
-  ): Promise<User & { usersHasNotes?: (UsersHasNotes & { notes: Note })[] }> {
+  async find(id: number): Promise<UserWithNotes> {
     const user = await this.prisma.users.findFirst({
       where: { id, deletedAt: null },
       include: userInclude,
@@ -51,9 +36,7 @@ export class UserService {
     return user;
   }
 
-  async create(
-    data: UserUpdateBodyDto,
-  ): Promise<User & { usersHasNotes?: (UsersHasNotes & { notes: Note })[] }> {
+  async create(data: UserUpdateBodyDto): Promise<UserWithNotes> {
     await this.assertClientExists(data.clientId);
     return this.prisma.users.create({
       data: { name: data.name, clientId: data.clientId },
@@ -61,10 +44,7 @@ export class UserService {
     });
   }
 
-  async update(
-    id: number,
-    data: UserUpdateBodyDto,
-  ): Promise<User & { usersHasNotes?: (UsersHasNotes & { notes: Note })[] }> {
+  async update(id: number, data: UserUpdateBodyDto): Promise<UserWithNotes> {
     await this.assertClientExists(data.clientId);
     return this.prisma.users
       .update({

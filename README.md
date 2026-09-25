@@ -69,10 +69,19 @@ yarn lint
   (`src/note/dto/`), so unknown types and malformed bills get a `400` with field-level messages.
 - References in the request body that don't exist return `400`; unknown path ids return `404`.
 - `updatedAt` is set explicitly on update and delete (the introspected schema has no `@updatedAt`).
-- `yarn lint` passes with 0 errors; the only warning (`no-console` in `prisma.service.ts`) comes from the template.
+- **Pagination.** Every `findAll` accepts `limit` (1–100, default 20) and `offset` (default 0), including
+  the raw SQL `clients.findAll`. The response is still a plain array.
+- Response types are derived from the Prisma `include` objects (`*.constants.ts` → `*.types.ts`), so they
+  can't drift from the queries. Path ids use the shared `src/common/dto/idParam.dto.ts`.
+- SQL is logged through Nest's `Logger` only when `NODE_ENV` is not `production` (query params may contain
+  personal data).
+- The dump creates two identical indexes on every junction table column;
+  `docker/initdb/02-drop-duplicate-indexes.sql` drops the copies (for a manually imported database run it
+  with `psql` once).
+- `yarn lint` passes with 0 errors and 0 warnings.
 
-Docker note: the services import the client from `prisma/prisma-client`, which resolves to the `prisma`
-package (a devDependency), so the runtime image keeps the full `node_modules`.
+Docker note: the runtime image installs production dependencies only and copies the Prisma client generated
+in the build stage.
 
 ## Web app
 

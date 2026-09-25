@@ -4,31 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  Prisma,
-  notes as Note,
-  clients as Client,
-  users as User,
-  clientsHasNotes as ClientsHasNotes,
-  usersHasNotes as UsersHasNotes,
-} from 'prisma/prisma-client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { rethrowNotFound } from '../prisma/prisma.errors';
+import { toPagination } from '../common/pagination';
+import { noteInclude } from './note.constants';
+import { NoteWithRelations } from './note.types';
 import { NoteFindAllQueryDto } from './dto/noteFindAllQuery.dto';
 import { NoteCreateBodyDto } from './dto/noteCreateBody.dto';
 import { NoteUpdateBodyDto } from './dto/noteUpdateBody.dto';
 import { NoteContentDto } from './dto/noteContent.dto';
-
-const noteInclude = {
-  usersHasNotes: {
-    where: { users: { deletedAt: null } },
-    include: { users: true },
-  },
-  clientsHasNotes: {
-    where: { clients: { deletedAt: null } },
-    include: { clients: true },
-  },
-} satisfies Prisma.notesInclude;
 
 function toNoteJson(note: NoteContentDto): Prisma.InputJsonObject {
   if (note.type === 'info') {
@@ -50,12 +35,7 @@ function toNoteJson(note: NoteContentDto): Prisma.InputJsonObject {
 export class NoteService {
   @Inject() private readonly prisma: PrismaService;
 
-  async findAll(query: NoteFindAllQueryDto): Promise<
-    (Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    })[]
-  > {
+  async findAll(query: NoteFindAllQueryDto): Promise<NoteWithRelations[]> {
     return this.prisma.notes.findMany({
       where: {
         deletedAt: null,
@@ -75,15 +55,11 @@ export class NoteService {
       },
       include: noteInclude,
       orderBy: { id: 'asc' },
+      ...toPagination(query),
     });
   }
 
-  async find(id: number): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  async find(id: number): Promise<NoteWithRelations> {
     const note = await this.prisma.notes.findFirst({
       where: { id, deletedAt: null },
       include: noteInclude,
@@ -94,12 +70,7 @@ export class NoteService {
     return note;
   }
 
-  async create(data: NoteCreateBodyDto): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  async create(data: NoteCreateBodyDto): Promise<NoteWithRelations> {
     const { userId, clientId } = data;
     if (userId === undefined && clientId === undefined) {
       throw new BadRequestException('Either userId or clientId is required');
@@ -147,12 +118,7 @@ export class NoteService {
   async update(
     id: number,
     data: NoteUpdateBodyDto,
-  ): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  ): Promise<NoteWithRelations> {
     return this.prisma.notes
       .update({
         where: { id, deletedAt: null },

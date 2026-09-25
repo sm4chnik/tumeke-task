@@ -11,16 +11,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  notes as Note,
-  clients as Client,
-  users as User,
-  clientsHasNotes as ClientsHasNotes,
-  usersHasNotes as UsersHasNotes,
-} from 'prisma/prisma-client';
+import { IdParamDto } from '../common/dto/idParam.dto';
 import { NoteService } from './note.service';
+import { NoteWithRelations } from './note.types';
 import { NoteFindAllQueryDto } from './dto/noteFindAllQuery.dto';
-import { NoteFindParamsDto } from './dto/noteFindParams.dto';
 import { NoteCreateBodyDto } from './dto/noteCreateBody.dto';
 import { NoteUpdateBodyDto } from './dto/noteUpdateBody.dto';
 
@@ -30,52 +24,34 @@ export class NoteController {
   @Inject() private readonly noteService: NoteService;
 
   @Get()
-  async findAll(@Query() query: NoteFindAllQueryDto): Promise<
-    (Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    })[]
-  > {
+  async findAll(
+    @Query() query: NoteFindAllQueryDto,
+  ): Promise<NoteWithRelations[]> {
     return this.noteService.findAll(query);
   }
 
   @Get(':id')
-  async find(@Param() params: NoteFindParamsDto): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  async find(@Param() params: IdParamDto): Promise<NoteWithRelations> {
     return this.noteService.find(params.id);
   }
 
   @Post()
   @HttpCode(201)
-  async create(@Body() body: NoteCreateBodyDto): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  async create(@Body() body: NoteCreateBodyDto): Promise<NoteWithRelations> {
     return this.noteService.create(body);
   }
 
   @Put(':id')
   async update(
-    @Param() params: NoteFindParamsDto,
+    @Param() params: IdParamDto,
     @Body() body: NoteUpdateBodyDto,
-  ): Promise<
-    Note & {
-      usersHasNotes?: (UsersHasNotes & { users: User })[];
-      clientsHasNotes?: (ClientsHasNotes & { clients: Client })[];
-    }
-  > {
+  ): Promise<NoteWithRelations> {
     return this.noteService.update(params.id, body);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param() params: NoteFindParamsDto): Promise<void> {
+  async delete(@Param() params: IdParamDto): Promise<void> {
     await this.noteService.delete(params.id);
   }
 }

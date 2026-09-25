@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { Prisma } from 'prisma/prisma-client';
+import { Prisma } from '@prisma/client';
 
 const RECORD_NOT_FOUND_CODE = 'P2025';
 

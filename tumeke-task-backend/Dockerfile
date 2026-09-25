@@ -10,11 +10,12 @@ FROM node:20-alpine
 RUN apk add --no-cache openssl
 WORKDIR /app
 ENV NODE_ENV=production
-# Services import from 'prisma/prisma-client', which lives in devDependencies,
-# so the full node_modules (with the generated client) is kept
-COPY --from=build /app/node_modules ./node_modules
+COPY package.json yarn.lock ./
+# Scripts are skipped because @prisma/client's postinstall needs the prisma CLI (a devDependency);
+# the client generated in the build stage is copied instead
+RUN yarn install --frozen-lockfile --production --ignore-scripts && yarn cache clean
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /app/dist ./dist
-COPY package.json ./
 USER node
 EXPOSE 3000
 CMD ["node", "dist/main"]
