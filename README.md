@@ -18,6 +18,7 @@ docker compose up --build
 | Service | URL |
 |---|---|
 | Backend API | http://localhost:3000 (e.g. `GET /clients?hasUnpaid=1`) |
+| Swagger UI | http://localhost:3000/docs |
 | Web app | http://localhost:8080 |
 | PostgreSQL 14 | `postgres://admin:password@localhost:5432/tumeke-task` |
 
@@ -79,6 +80,8 @@ yarn lint
   `docker/initdb/02-drop-duplicate-indexes.sql` drops the copies (for a manually imported database run it
   with `psql` once).
 - `yarn lint` passes with 0 errors and 0 warnings.
+- **Swagger UI** is at `/docs`. `@nestjs/swagger` was already in the template (`@ApiTags` on
+  the controllers); this only wires `DocumentBuilder` and documents the note JSON union.
 
 Docker note: the runtime image installs production dependencies only and copies the Prisma client generated
 in the build stage.

@@ -1,3 +1,4 @@
+import { getSchemaPath } from '@nestjs/swagger';
 import { TypeOptions } from 'class-transformer';
 import { FinanceNoteDto } from './financeNote.dto';
 import { InfoNoteDto } from './infoNote.dto';
@@ -15,4 +16,11 @@ export const noteContentTypeOptions: TypeOptions = {
     ],
   },
   keepDiscriminatorProperty: true,
+};
+
+export const noteContentApiProperty = {
+  oneOf: [
+    { $ref: getSchemaPath(InfoNoteDto) },
+    { $ref: getSchemaPath(FinanceNoteDto) },
+  ],
 };
